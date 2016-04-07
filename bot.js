@@ -63,22 +63,23 @@ This bot demonstrates many of the core features of Botkit:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
+var Botkit = require('botkit'),
+    os = require('os'),
+    config = require('./config');
 
-if (!process.env.token) {
-    console.log('Error: Specify token in environment');
+var token = process.env.token || config.token;
+
+if (!token) {
+    console.log('Error: Specify token in environment variable or config file');
     process.exit(1);
 }
 
-var Botkit = require('botkit');
-var os = require('os');
-
 var controller = Botkit.slackbot({
-    //debug: true,
-    debug: false,
+    debug: config.debug,
 });
 
 var bot = controller.spawn({
-    token: process.env.token
+    token: token
 }).startRTM();
 
 
