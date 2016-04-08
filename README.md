@@ -1,7 +1,10 @@
 # ndpbot
-A Slackbot for NDP used to manage things like scheduling of resources and other cool stuff. Based on Botkit.
+A Slackbot for NDP used to manage things like scheduling of resources and other cool stuff. Based on [Botkit](http://howdy.ai/botkit).
 
-## Start with
+## You need a token
+Go to [Slack](http://my.slack.com/services/new/bot) and create a new token.
+
+## Start the bot
     $ token=<token> nodemon bot.js
 
 ## Docker step-by-step
