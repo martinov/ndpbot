@@ -64,7 +64,6 @@ This bot demonstrates many of the core features of Botkit:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 var Botkit = require('botkit'),
-    os = require('os'),
     config = require('./config');
 
 var token = process.env.token || config.token;
@@ -187,66 +186,8 @@ controller.hears(['what is my name', 'who am i'], 'direct_message,direct_mention
     });
 });
 
-
-controller.hears(['shutdown'], 'direct_message,direct_mention,mention', function(bot, message) {
-
-    bot.startConversation(message, function(err, convo) {
-
-        convo.ask('Are you sure you want me to shutdown?', [
-            {
-                pattern: bot.utterances.yes,
-                callback: function(response, convo) {
-                    convo.say('Bye!');
-                    convo.next();
-                    setTimeout(function() {
-                        process.exit();
-                    }, 3000);
-                }
-            },
-        {
-            pattern: bot.utterances.no,
-            default: true,
-            callback: function(response, convo) {
-                convo.say('*Phew!*');
-                convo.next();
-            }
-        }
-        ]);
-    });
-});
-
-
-controller.hears(['uptime', 'identify yourself', 'who are you', 'what is your name'],
-    'direct_message,direct_mention,mention', function(bot, message) {
-
-        var hostname = os.hostname();
-        var uptime = formatUptime(process.uptime());
-
-        bot.reply(message,
-            ':robot_face: I am a bot named <@' + bot.identity.name +
-             '>. I have been running for ' + uptime + ' on ' + hostname + '.');
-
-    });
-
-
-function formatUptime(uptime) {
-    var unit = 'second';
-    if (uptime > 60) {
-        uptime = uptime / 60;
-        unit = 'minute';
-    }
-    if (uptime > 60) {
-        uptime = uptime / 60;
-        unit = 'hour';
-    }
-    if (uptime != 1) {
-        unit = unit + 's';
-    }
-
-    uptime = uptime + ' ' + unit;
-    return uptime;
-}
-
+var shutdown = require('./convos/shutdown')(controller, config);
+var uptime = require('./convos/uptime')(controller, config);
 
 controller.hears(['I am unscheduled', 'I need tasks'],
     'direct_message,direct_mention,mention', function(bot, message) {
