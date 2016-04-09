@@ -14,8 +14,12 @@
   "keywords": [
     "slackbot"
   ],
-  "author": "Martin Martinov @mmartinov",
+  "author": "Martin Martinov",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/martinov/ndpbot/issues"
+  },
+  "homepage": "https://github.com/martinov/ndpbot#readme",
   "dependencies": {
     "botkit": "0.0.15"
   }
