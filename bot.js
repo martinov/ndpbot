@@ -189,20 +189,6 @@ controller.hears(['what is my name', 'who am i'], 'direct_message,direct_mention
 var shutdown = require('./convos/shutdown')(controller, config);
 var uptime = require('./convos/uptime')(controller, config);
 
-controller.hears(['I am unscheduled', 'I need tasks'],
-    'direct_message,direct_mention,mention', function(bot, message) {
-
-        bot.reply(message, 'OK dude, I will email schedule@ and mark the board for you.');
-
-});
-
-
-controller.hears(['make me (.*)'],
-    'direct_message,direct_mention,mention', function(bot, message) {
-
-      var thing = message.match[1];
-
-      bot.reply(message,
-        'Dude, I don\'t have a physical body (yet). Why don\'t you make ' + thing + ' yourself?');
-
-});
+var unscheduled = require('./convos/unscheduled')(controller, config);
+var makeMeTee = require('./convos/make_tee')(controller, config);
+var runningLate = require('./convos/running_late')(controller, config);
