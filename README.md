@@ -11,5 +11,7 @@ Go to [Slack](http://my.slack.com/services/new/bot) and create a new token.
     # git clone git+ssh://git@github.com/martinov/ndpbot.git
     # cp config.sample.js config.js && vi config.js
     # docker build -t mmartinov/ndpbot .
-    # docker run -d --name ndpbot1 mmartinov/ndpbot
+    # docker run --name redis-ndpbot -d -v ~/docker/redis-data:/data redis redis-server --appendonly yes
+    # docker run --name ndpbot1 --link redis-ndpbot:redis -d mmartinov/ndpbot
+    # docker exec -it ndpbot1 bash
     # docker ps -> docker logs

@@ -64,7 +64,8 @@ This bot demonstrates many of the core features of Botkit:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 var Botkit = require('botkit'),
-    config = require('./config');
+    config = require('./config'),
+    redisStorage = require('botkit-storage-redis')(config.redisConfig);
 
 var token = process.env.token || config.token;
 
@@ -75,6 +76,7 @@ if (!token) {
 
 var controller = Botkit.slackbot({
     debug: config.debug,
+    storage: redisStorage
 });
 
 var bot = controller.spawn({
