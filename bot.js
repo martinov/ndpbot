@@ -72,7 +72,7 @@ if (!process.env.SLACK_TOKEN) {
 }
 
 var slackbotConfig = {
-  debug: process.env.BOTKIT_DEBUG
+  debug: false
 }
 if (process.env.REDIS_HOST) {
   slackbotConfig.storage = require('botkit-storage-redis')({

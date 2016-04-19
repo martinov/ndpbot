@@ -1,5 +1,6 @@
-var nodemailer = require('nodemailer'),
-  nmmgt = require('nodemailer-mailgun-transport');
+const nodemailer = require('nodemailer'),
+  nodemailerMailGunTransport = require('nodemailer-mailgun-transport')
+  Promise = require('bluebird');
 
 module.exports = function(controller) {
 
@@ -44,7 +45,6 @@ module.exports = function(controller) {
           if (convo.status == 'completed') {
             bot.reply(message, 'OK, got it!');
 
-            /*
             controller.storage.users.get(message.user, function(err, user) {
               if (!user) {
                 user = {
@@ -52,38 +52,52 @@ module.exports = function(controller) {
                 };
               }
               user.eta = convo.extractResponse('eta');
-              controller.storage.users.save(user, function(err, id) {
-                bot.reply(message, 'Got it. I will call you ' + user.name + ' from now on.');
-              });
-            });
-            */
-
-            // create reusable transporter object
-            var transporter = nodemailer.createTransport(
-              nmmgt(config.mgAuth)
-            );
-
-            // setup e-mail data with unicode symbols
-            var mailOptions = {
-              from: config.emailFrom, // sender address
-              to: 'martin@ndp-studio.com', // comma-separated list of receivers
-              subject: 'Someone is running late', // Subject line
-              text: 'This dude wanted me to let you know that he\'ll be late..', // plaintext body
-              html: '<b>Someone</b> is late for work. Their ETA is: <i>'
-               + convo.extractResponse('eta') + '</i>' // html body
-            };
-
-            // send mail with defined transport object
-            transporter.sendMail(mailOptions, function(error, info) {
-              if (error) {
-                bot.reply(message,
-                  'I was not able to send an email to arrival@ but if someone asks me I\'ll let them know.');
+              if (user.real_name == undefined || user.email == undefined) {
+                // Get user info from Slack API
+                apiGetUserInfo(bot, message.user).then(function (apiUser) {
+                  //console.log(apiUser.profile.email, 'api result');
+                  user.real_name = apiUser.profile.real_name;
+                  user.email = apiUser.profile.email;
+                  controller.storage.users.save(user, function(err, id) {
+                    if (err) {
+                      bot.botkit.log('Failed to store user info', error);
+                    }
+                  });
+                });
               }
-              //console.log('Message sent: ' + info.message);
-              bot.reply(message,
-                'I\'ve sent an email to arrival@ and if someone asks me I\'ll let them know.');
-            });
 
+              // create reusable transporter object
+              const transporter = nodemailer.createTransport(
+                nodemailerMailGunTransport({
+                  'auth': {
+                    'api_key': process.env.MG_API_KEY,
+                    'domain': process.env.MG_DOMAIN
+              }}));
+
+              // setup e-mail data with unicode symbols
+              var mailOptions = {
+                from: process.env.EMAIL_FROM, // sender address
+                to: process.env.EMAIL_ARRIVAL + ', ' + user.email, // comma-separated list of receivers
+                subject: user.real_name + ' is running late', // Subject line
+                text: user.real_name + ' is late for work. Their ETA: ' + user.eta, // plaintext body
+                html: '<b>' + user.real_name + '</b> is late for work. Their ETA: '
+                  + '<i>' + user.eta + '</i>' // html body
+              };
+
+              // send mail with defined transport object
+              transporter.sendMail(mailOptions, function(error, info) {
+                if (error) {
+                  bot.reply(message,
+                    'I was not able to send an email to arrival@ but if someone asks me I\'ll let them know.');
+                  bot.botkit.log('Failed to send an email', error);
+                  return;
+                }
+                //console.log('Message sent: ' + info.message);
+                bot.reply(message,
+                  'I\'ve sent an email to arrival@ and if someone asks me I\'ll let them know.');
+              });
+
+            });
 
           } else {
             // this happens if the conversation ended prematurely for some reason
@@ -104,3 +118,20 @@ module.exports = function(controller) {
   });
 
 }
+
+// Get User Info API request
+const apiGetUserInfo = function (bot, userId) {
+  return new Promise(function (resolve, reject) {
+    // Get user info from Slack API
+    bot.api.users.info({
+      user: userId,
+    }, function(err, res) {
+      if (err) {
+        bot.botkit.log('Failed to get user info for ' + userId, err);
+        reject(err);
+      } else {
+        resolve(res.user);
+      }
+    });
+  });
+};
