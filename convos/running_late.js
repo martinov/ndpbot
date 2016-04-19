@@ -1,9 +1,9 @@
 var nodemailer = require('nodemailer'),
   nmmgt = require('nodemailer-mailgun-transport');
 
-module.exports = function(controller, config) {
+module.exports = function(controller) {
 
-  controller.hears(['I am running late', 'I\'m late for work'],
+  controller.hears(['I am running late', 'I\'m running late', 'I\'m late for work'],
     'direct_message,direct_mention,mention', function(bot, message) {
 
     bot.startConversation(message, function(err, convo) {

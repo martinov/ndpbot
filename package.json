@@ -21,9 +21,11 @@
   },
   "homepage": "https://github.com/martinov/ndpbot#readme",
   "dependencies": {
+    "bluebird": "^3.3.5",
     "botkit": "0.0.15",
     "botkit-storage-redis": "^1.0.1",
-    "nodemailer": "^2.3.0",
+    "dotenv": "^2.0.0",
+    "nodemailer": "^2.3.2",
     "nodemailer-mailgun-transport": "^1.0.1"
   }
 }

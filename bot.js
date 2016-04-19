@@ -63,26 +63,28 @@ This bot demonstrates many of the core features of Botkit:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-var Botkit = require('botkit'),
-    config = require('./config'),
-    redisStorage = require('botkit-storage-redis')(config.redisConfig);
+var Botkit = require('botkit');
+require('dotenv').config();
 
-var token = process.env.token || config.token;
-
-if (!token) {
-    console.log('Error: Specify token in environment variable or config file');
-    process.exit(1);
+if (!process.env.SLACK_TOKEN) {
+  console.log('Error: Specify "slack_token" in environment variable.');
+  process.exit(1);
 }
 
-var controller = Botkit.slackbot({
-    debug: config.debug,
-    storage: redisStorage
-});
+var slackbotConfig = {
+  debug: process.env.BOTKIT_DEBUG
+}
+if (process.env.REDIS_HOST) {
+  slackbotConfig.storage = require('botkit-storage-redis')({
+    'host': process.env.REDIS_HOST
+  });
+}
+
+var controller = Botkit.slackbot(slackbotConfig);
 
 var bot = controller.spawn({
-    token: token
+  token: process.env.SLACK_TOKEN
 }).startRTM();
-
 
 controller.hears(['hello', 'hi'], 'direct_message,direct_mention,mention', function(bot, message) {
 
@@ -188,9 +190,9 @@ controller.hears(['what is my name', 'who am i'], 'direct_message,direct_mention
     });
 });
 
-var shutdown = require('./convos/shutdown')(controller, config);
-var uptime = require('./convos/uptime')(controller, config);
+var shutdown = require('./convos/shutdown')(controller);
+var uptime = require('./convos/uptime')(controller);
 
-var unscheduled = require('./convos/unscheduled')(controller, config);
-var makeMeTee = require('./convos/make_tee')(controller, config);
-var runningLate = require('./convos/running_late')(controller, config);
+var unscheduled = require('./convos/unscheduled')(controller);
+var makeMeTee = require('./convos/make_tee')(controller);
+var runningLate = require('./convos/running_late')(controller);
