@@ -16,3 +16,5 @@ Go to [Slack](http://my.slack.com/services/new/bot) and create one.
 ## Random resources
 - [.env](https://www.npmjs.com/package/dotenv)
 - [How to deploy Slack Bots to Heroku](https://blog.heroku.com/archives/2016/3/9/how-to-deploy-your-slack-bots-to-heroku)
+- [Botie](http://blog.templeton.host/self-training-nlp-enabled-slack-bot-tutorial/)
+- [Chipsandguac](https://github.com/jquatier/chipsandguac/blob/master/chipsandguac.js)

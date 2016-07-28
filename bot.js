@@ -76,7 +76,8 @@ var slackbotConfig = {
 }
 if (process.env.REDIS_HOST) {
   slackbotConfig.storage = require('botkit-storage-redis')({
-    'host': process.env.REDIS_HOST
+    //'host': process.env.REDIS_HOST
+    'url': 'redis://x:WJIHRGXLKIBJQHLL@aws-us-east-1-portal.17.dblayer.com:11430'
   });
 }
 
